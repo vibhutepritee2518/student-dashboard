@@ -1,0 +1,30 @@
+/* Professional Student Dashboard CSS */
+body{font-family:Poppins,sans-serif;background:linear-gradient(135deg,#eef2ff,#f8fafc);
+    color:#1f2937;
+    padding:30px}*{box-sizing:border-box}
+    header
+    {
+        background:linear-gradient(135deg,#2563eb,#4f46e5);
+        color:#fff;
+        padding:28px;
+        border-radius:20px;
+        margin-bottom:25px}
+        .wrap{max-width:1200px;margin:auto}
+        .panel{background:#fff;border-radius:20px;padding:24px;
+            margin-bottom:24px;box-shadow:0 10px 30px rgba(37,99,235,.12)}
+            .form-grid{display:grid;
+                grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+                .field input,.field select,.toolbar input,.toolbar select{width:100%;padding:12px;border:2px solid #e5e7eb;
+                    border-radius:12px}
+                .btn-primary{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff}
+                .btn-ghost{background:#eff6ff;color:#2563eb}button{padding:12px 20px;
+                    border:none;border-radius:12px;cursor:pointer;transition:.3s}
+                    button:hover{transform:translateY(-2px)}
+                    table{width:100%;border-collapse:collapse}
+                    thead{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff}th,td{padding:16px}tbody tr:nth-child(even)
+                    {background:#fafbff}tbody tr:hover{background:#dbeafe}
+                    .toolbar{display:flex;gap:15px;flex-wrap:wrap;margin-bottom:20px}
+                    .count-tag{margin-left:auto}
+                    .empty-state{text-align:center;padding:40px}
+                    @media(max-width:768px)
+{body{padding:15px}table,thead,tbody,tr,th,td{display:block}thead{display:none}}
