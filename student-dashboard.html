@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Management Dashboard</title>
+<style>
+  :root{
+    --ink:#1c2230;
+    --paper:#ffffff;
+    --bg:#f3f5fa;
+    --line:#e3e7f0;
+    --accent:#3d5af1;
+    --accent-soft:#eef0fe;
+    --danger:#e0533d;
+    --danger-soft:#fceceA;
+    --good:#2f9e6e;
+    --muted:#8993a4;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    padding:32px 20px 60px;
+  }
+  .wrap{max-width:1000px;margin:0 auto;}
+  header{margin-bottom:24px;}
+  header h1{font-size:24px;font-weight:700;margin:0 0 4px;}
+  header p{margin:0;color:var(--muted);font-size:14px;}
+
+  .panel{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:20px;
+    margin-bottom:20px;
+  }
+  .panel h2{font-size:15px;margin:0 0 14px;font-weight:600;}
+
+  .form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:12px;
+    margin-bottom:14px;
+  }
+  .field label{
+    display:block;
+    font-size:11.5px;
+    color:var(--muted);
+    margin-bottom:5px;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+  .field input, .field select{
+    width:100%;
+    padding:9px 10px;
+    border-radius:9px;
+    border:1px solid var(--line);
+    font-size:14px;
+    outline:none;
+    background:#fbfbfe;
+  }
+  .field input:focus, .field select:focus{border-color:var(--accent);background:white;}
+
+  .form-actions{display:flex;gap:10px;}
+  button{
+    cursor:pointer;
+    border:none;
+    border-radius:9px;
+    font-size:13.5px;
+    font-weight:600;
+    padding:9px 16px;
+    transition:opacity .15s ease, transform .1s ease;
+  }
+  button:active{transform:scale(0.97);}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{opacity:.9;}
+  .btn-ghost{background:var(--accent-soft);color:var(--accent);}
+  .btn-ghost:hover{opacity:.85;}
+
+  .toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+    margin-bottom:14px;
+  }
+  .toolbar input[type=text]{
+    flex:1;
+    min-width:180px;
+    padding:9px 12px;
+    border-radius:9px;
+    border:1px solid var(--line);
+    font-size:14px;
+    outline:none;
+  }
+  .toolbar select{
+    padding:9px 10px;
+    border-radius:9px;
+    border:1px solid var(--line);
+    font-size:13.5px;
+    background:white;
+  }
+  .count-tag{font-size:12.5px;color:var(--muted);margin-left:auto;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  thead th{
+    text-align:left;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    color:var(--muted);
+    padding:8px 10px;
+    border-bottom:1px solid var(--line);
+  }
+  tbody td{
+    padding:11px 10px;
+    border-bottom:1px solid var(--line);
+    vertical-align:middle;
+  }
+  tbody tr:hover{background:#fafbff;}
+  .grade-badge{
+    display:inline-block;
+    padding:3px 9px;
+    border-radius:999px;
+    font-size:11.5px;
+    font-weight:700;
+    background:var(--accent-soft);
+    color:var(--accent);
+  }
+  .row-actions{display:flex;gap:8px;}
+  .row-actions button{padding:6px 11px;font-size:12px;}
+  .empty-state{
+    text-align:center;
+    padding:36px 10px;
+    color:var(--muted);
+    font-size:13.5px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Student Management Dashboard</h1>
+    <p>Add, edit, delete, search and filter student records.</p>
+  </header>
+
+  <div class="panel">
+    <h2 id="formTitle">Add student</h2>
+    <div class="form-grid">
+      <div class="field">
+        <label>Name</label>
+        <input type="text" id="fName" placeholder="Full name">
+      </div>
+      <div class="field">
+        <label>Roll no.</label>
+        <input type="text" id="fRoll" placeholder="e.g. 24CS041">
+      </div>
+      <div class="field">
+        <label>Class / Grade</label>
+        <select id="fGrade">
+          <option value="">Select</option>
+          <option>Grade 9</option>
+          <option>Grade 10</option>
+          <option>Grade 11</option>
+          <option>Grade 12</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="text" id="fEmail" placeholder="student@email.com">
+      </div>
+      <div class="field">
+        <label>Marks (%)</label>
+        <input type="number" id="fMarks" placeholder="0-100" min="0" max="100">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-primary" id="saveBtn">Add student</button>
+      <button class="btn-ghost" id="cancelBtn" style="display:none;">Cancel edit</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="toolbar">
+      <input type="text" id="searchInput" placeholder="Search by name, roll no. or email…">
+      <select id="filterGrade">
+        <option value="">All grades</option>
+        <option>Grade 9</option>
+        <option>Grade 10</option>
+        <option>Grade 11</option>
+        <option>Grade 12</option>
+      </select>
+      <select id="sortBy">
+        <option value="name">Sort: Name (A–Z)</option>
+        <option value="marks-desc">Sort: Marks (high–low)</option>
+        <option value="marks-asc">Sort: Marks (low–high)</option>
+      </select>
+      <span class="count-tag" id="countTag"></span>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Roll no.</th>
+          <th>Class</th>
+          <th>Email</th>
+          <th>Marks</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div class="empty-state" id="emptyState" style="display:none;">No students match your search/filter.</div>
+  </div>
+</div>
+
+<script>
+/*
+  STORAGE NOTE:
+  Claude.ai's artifact preview blocks browser storage APIs (localStorage/sessionStorage),
+  so this demo keeps data in an in-memory array ("students") for the session.
+
+  To make this persist for real, drop this file into your own project (VS Code, a plain
+  .html file opened locally, etc.) and swap the two functions below for the commented
+  localStorage versions:
+
+  function saveStudents(){
+    localStorage.setItem('students', JSON.stringify(students));
+  }
+  function loadStudents(){
+    const data = localStorage.getItem('students');
+    return data ? JSON.parse(data) : [];
+  }
+*/
+
+let students = [
+  { id: 1, name: 'Aarav Sharma', roll: '24CS001', grade: 'Grade 10', email: 'aarav.sharma@email.com', marks: 88 },
+  { id: 2, name: 'Diya Patel', roll: '24CS002', grade: 'Grade 9', email: 'diya.patel@email.com', marks: 76 },
+  { id: 3, name: 'Kabir Mehta', roll: '24CS003', grade: 'Grade 12', email: 'kabir.mehta@email.com', marks: 92 },
+];
+let nextId = 4;
+let editingId = null;
+
+function saveStudents(){
+  // In-memory only inside this preview — see note above.
+}
+function loadStudents(){
+  return students;
+}
+
+// ---- DOM refs ----
+const fName = document.getElementById('fName');
+const fRoll = document.getElementById('fRoll');
+const fGrade = document.getElementById('fGrade');
+const fEmail = document.getElementById('fEmail');
+const fMarks = document.getElementById('fMarks');
+const saveBtn = document.getElementById('saveBtn');
+const cancelBtn = document.getElementById('cancelBtn');
+const formTitle = document.getElementById('formTitle');
+const tableBody = document.getElementById('tableBody');
+const emptyState = document.getElementById('emptyState');
+const countTag = document.getElementById('countTag');
+const searchInput = document.getElementById('searchInput');
+const filterGrade = document.getElementById('filterGrade');
+const sortBy = document.getElementById('sortBy');
+
+function clearForm(){
+  fName.value = '';
+  fRoll.value = '';
+  fGrade.value = '';
+  fEmail.value = '';
+  fMarks.value = '';
+  editingId = null;
+  formTitle.textContent = 'Add student';
+  saveBtn.textContent = 'Add student';
+  cancelBtn.style.display = 'none';
+}
+
+function validateForm(){
+  if(!fName.value.trim()){ alert('Please enter the student name.'); return false; }
+  if(!fRoll.value.trim()){ alert('Please enter a roll number.'); return false; }
+  if(!fGrade.value){ alert('Please select a class/grade.'); return false; }
+  if(fMarks.value !== '' && (fMarks.value < 0 || fMarks.value > 100)){
+    alert('Marks must be between 0 and 100.'); return false;
+  }
+  return true;
+}
+
+function handleSave(){
+  if(!validateForm()) return;
+
+  const record = {
+    id: editingId ?? nextId++,
+    name: fName.value.trim(),
+    roll: fRoll.value.trim(),
+    grade: fGrade.value,
+    email: fEmail.value.trim(),
+    marks: fMarks.value === '' ? null : Number(fMarks.value),
+  };
+
+  if(editingId !== null){
+    const idx = students.findIndex(s => s.id === editingId);
+    students[idx] = record;
+  } else {
+    students.push(record);
+  }
+
+  saveStudents();
+  clearForm();
+  render();
+}
+
+function handleEdit(id){
+  const s = students.find(s => s.id === id);
+  if(!s) return;
+  fName.value = s.name;
+  fRoll.value = s.roll;
+  fGrade.value = s.grade;
+  fEmail.value = s.email;
+  fMarks.value = s.marks ?? '';
+  editingId = id;
+  formTitle.textContent = 'Edit student';
+  saveBtn.textContent = 'Save changes';
+  cancelBtn.style.display = 'inline-block';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function handleDelete(id){
+  const s = students.find(s => s.id === id);
+  if(!s) return;
+  if(!confirm(`Delete ${s.name}'s record? This can't be undone.`)) return;
+  students = students.filter(s => s.id !== id);
+  saveStudents();
+  render();
+}
+
+function getGradeColor(marks){
+  if(marks === null || marks === undefined) return '#8993a4';
+  if(marks >= 85) return '#2f9e6e';
+  if(marks >= 60) return '#3d5af1';
+  return '#e0533d';
+}
+
+function render(){
+  const q = searchInput.value.trim().toLowerCase();
+  const gradeFilter = filterGrade.value;
+  const sort = sortBy.value;
+
+  let list = students.filter(s => {
+    const matchesQuery = !q ||
+      s.name.toLowerCase().includes(q) ||
+      s.roll.toLowerCase().includes(q) ||
+      s.email.toLowerCase().includes(q);
+    const matchesGrade = !gradeFilter || s.grade === gradeFilter;
+    return matchesQuery && matchesGrade;
+  });
+
+  list = list.slice().sort((a, b) => {
+    if(sort === 'name') return a.name.localeCompare(b.name);
+    if(sort === 'marks-desc') return (b.marks ?? -1) - (a.marks ?? -1);
+    if(sort === 'marks-asc') return (a.marks ?? 101) - (b.marks ?? 101);
+    return 0;
+  });
+
+  countTag.textContent = `${list.length} of ${students.length} student${students.length !== 1 ? 's' : ''}`;
+
+  if(list.length === 0){
+    tableBody.innerHTML = '';
+    emptyState.style.display = 'block';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  tableBody.innerHTML = list.map(s => `
+    <tr>
+      <td>${escapeHtml(s.name)}</td>
+      <td>${escapeHtml(s.roll)}</td>
+      <td>${escapeHtml(s.grade)}</td>
+      <td>${escapeHtml(s.email) || '—'}</td>
+      <td><span class="grade-badge" style="background:${getGradeColor(s.marks)}22;color:${getGradeColor(s.marks)};">
+        ${s.marks !== null && s.marks !== undefined ? s.marks + '%' : '—'}
+      </span></td>
+      <td>
+        <div class="row-actions">
+          <button class="btn-ghost" onclick="handleEdit(${s.id})">Edit</button>
+          <button class="btn-ghost" style="background:#fceceA;color:#e0533d;" onclick="handleDelete(${s.id})">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str ?? '';
+  return div.innerHTML;
+}
+
+saveBtn.addEventListener('click', handleSave);
+cancelBtn.addEventListener('click', clearForm);
+searchInput.addEventListener('input', render);
+filterGrade.addEventListener('change', render);
+sortBy.addEventListener('change', render);
+
+students = loadStudents();
+render();
+</script>
+</body>
+</html>
